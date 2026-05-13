@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INJIN-Corpe pvt ltd | Global Retrofit Dashboard</title>
+    <style>
+        :root { --injin-green: #00d2d3; --injin-blue: #2e86de; --dark: #0f1215; --card: #1c2227; }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: #fff; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .wrapper { width: 100%; max-width: 1350px; display: grid; grid-template-columns: 400px 1fr; gap: 30px; }
+        
+        /* Sidebar Configurator */
+        .sidebar { background: var(--card); padding: 35px; border-radius: 25px; border: 1px solid #333; height: fit-content; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .logo { font-size: 1.6rem; font-weight: 900; color: var(--injin-green); margin-bottom: 30px; border-left: 5px solid var(--injin-green); padding-left: 15px; text-transform: uppercase; }
+        .field { margin-bottom: 20px; }
+        label { display: block; font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 8px; font-weight: bold; }
+        select, input { width: 100%; padding: 14px; background: #000; border: 1px solid #444; border-radius: 12px; color: #fff; font-size: 1rem; box-sizing: border-box; }
+
+        /* Dashboard Main Area */
+        .preview-pane { height: 400px; background: #000; border-radius: 25px; overflow: hidden; position: relative; border: 1px solid #333; margin-bottom: 25px; }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; transition: 0.5s ease-in-out; }
+        .overlay-status { position: absolute; top: 25px; left: 25px; background: var(--injin-green); color: #000; padding: 8px 18px; font-weight: 900; border-radius: 8px; font-size: 14px; z-index: 10; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #333; text-align: center; }
+        .val { font-size: 1.6rem; font-weight: 800; color: #fff; display: block; }
+        .unit { font-size: 10px; color: #777; text-transform: uppercase; margin-top: 5px; }
+
+        /* Cost Breakdown Table */
+        .cost-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 20px; overflow: hidden; margin-bottom: 25px; }
+        .cost-table th { text-align: left; padding: 18px; background: rgba(255,255,255,0.05); font-size: 12px; color: #aaa; }
+        .cost-table td { padding: 18px; border-bottom: 1px solid #333; }
+        .total-row { background: var(--injin-blue); font-size: 1.4rem; font-weight: 900; }
+
+        .btn-action { background: var(--injin-green); color: #000; width: 100%; padding: 22px; border: none; border-radius: 15px; font-weight: 900; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+        
+        #bookingModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; justify-content: center; align-items: center; }
+        .modal-box { background: #fff; color: #222; padding: 45px; border-radius: 30px; width: 480px; position: relative; }
+        .modal-box input { border: 1px solid #ddd; background: #f4f4f4; color: #222; margin-bottom: 15px; }
+        
+        #thankYouNote { display: none; text-align: center; color: var(--injin-green); font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="sidebar">
+        <div class="logo">INJIN-Corpe pvt ltd</div>
+        
+        <div class="field">
+            <label>Machine Selection</label>
+            <select id="type" onchange="update()">
+                <option value="truck">Electric Haul Truck (SCANIA)</option>
+                <option value="excavator">Hydraulic Excavator (VOLVO)</option>
+                <option value="telehandler">Heavy Telehandler (MANITOU)</option>
+                <option value="custom">⚙️ CUSTOM / R&D UNIT</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Current Weight (Tonnes)</label>
+            <input type="number" id="weight" value="20" oninput="update()">
+        </div>
+
+        <div class="field">
+            <label>Diesel Engine (HP)</label>
+            <input type="number" id="hp" value="300" oninput="update()">
+        </div>
+
+        <div class="field">
+            <label>Design Availability</label>
+            <select id="design" onchange="update()">
+                <option value="1">CAD/3D Data Available</option>
+                <option value="1.9">No Designs (In-House Engineering)</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Team Strength On-Ground</label>
+            <select id="team" onchange="update()">
+                <option value="2">2 Engineers</option>
+                <option value="5" selected>5 Engineers (Standard)</option>
+                <option value="10">10 Engineers (Fast-Track)</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Project Destination</label>
+            <select id="currency" onchange="update()">
+                <option value="CHF" data-symbol="CHF" data-rate="0.91">Switzerland (CHF)</option>
+                <option value="NOK" data-symbol="kr" data-rate="10.8">Norway (NOK)</option>
+                <option value="GBP" data-symbol="£" data-rate="0.79">United Kingdom (GBP)</option>
+                <option value="EUR" data-symbol="€" data-rate="0.92">Europe (Scandinavia)</option>
+                <option value="INR" data-symbol="₹" data-rate="83.5">India (INR)</option>
+                <option value="USD" data-symbol="$" data-rate="1">United States (USD)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="preview-pane">
+            <div class="overlay-status">CONVERSION MODEL ACTIVE</div>
+            <img id="mImg" class="preview-img" src="" alt="Machinery Preview">
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><span class="val" id="out-kw">0</span><span class="unit">Req. kW</span></div>
+            <div class="stat-card"><span class="val" id="out-kwh">0</span><span class="unit">Battery kWh</span></div>
+            <div class="stat-card"><span class="val" id="out-hours">0</span><span class="unit">Labor Hours</span></div>
+            <div class="stat-card" style="border-right: 4px solid var(--injin-green);"><span class="val" id="out-days">0</span><span class="unit">Days to Complete</span></div>
+        </div>
+
+        <table class="cost-table">
+            <thead>
+                <tr><th>Component</th><th>Tech Details</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody id="breakdown"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="2" style="padding:25px">ESTIMATED PROJECT VALUE</td>
+                    <td id="total-price" style="padding:25px">$0</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <button class="btn-action" onclick="document.getElementById('bookingModal').style.display='flex'">RESERVE YOUR BUILD SLOT</button>
+    </div>
+</div>
+
+<div id="bookingModal">
+    <div class="modal-box">
+        <h2 style="margin-top:0; color:var(--injin-blue)">Build Reservation</h2>
+        <form onsubmit="handleSubmit(event)">
+            <label style="color:#222">Contact Person</label>
+            <input type="text" id="fName" placeholder="Full Name" required>
+            
+            <label style="color:#222">Company Name</label>
+            <input type="text" id="fCompany" placeholder="Organization" required>
+
+            <label style="color:#222">Official Email ID</label>
+            <input type="email" id="fEmail" placeholder="name@company.com" required>
+            
+            <label style="color:#222">WhatsApp / Phone</label>
+            <input type="tel" id="fPhone" placeholder="+41 00 000 00 00" required>
+            
+            <button type="submit" class="btn-action" style="background:var(--injin-blue); color:#fff">CONFIRM BOOKING</button>
+            <div id="thankYouNote">Thank you for your enquiry! Our team will contact you shortly.</div>
+            <div onclick="document.getElementById('bookingModal').style.display='none'" style="text-align:center; margin-top:15px; cursor:pointer; color:#888; font-size:12px;">Close Window</div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Machine Images mapping
+const machineImages = {
+    truck: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Truck-Scania_V8.JPG/1280px-Truck-Scania_V8.JPG",
+    excavator: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Volvo_EC460B_LC.jpg/1280px-Volvo_EC460B_LC.jpg",
+    telehandler: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Manitou_MRT_1850_hl.jpg/1280px-Manitou_MRT_1850_hl.jpg",
+    custom: "https://images.pexels.com/photos/38271/mechanical-engineer-engineering-machine-machine-shop-38271.jpeg?auto=compress&cs=tinysrgb&w=1200"
+};
+
+function update() {
+    const type = document.getElementById('type').value;
+    const weight = parseFloat(document.getElementById('weight').value) || 0;
+    const hp = parseFloat(document.getElementById('hp').value) || 0;
+    const designMod = parseFloat(document.getElementById('design').value);
+    const team = parseInt(document.getElementById('team').value);
+    const curr = document.getElementById('currency');
+    const symbol = curr.options[curr.selectedIndex].getAttribute('data-symbol');
+    const rate = parseFloat(curr.options[curr.selectedIndex].getAttribute('data-rate'));
+
+    // Update image
+    document.getElementById('mImg').src = machineImages[type];
+
+    // Engineering Calculations
+    const kw = Math.round(hp * 0.745);
+    const kwh = Math.round(kw * 3.5);
+    const baseLabor = (type === 'custom' ? 400 : 200) + (weight * 12);
+    const totalLabor = Math.round(baseLabor * designMod);
+    const estDays = Math.round(totalLabor / (team * 8));
+
+    // Pricing Estimates
+    const costPowertrain = (kw * 250) * rate;
+    const costBattery = (kwh * 450) * rate;
+    const costLabor = (totalLabor * 90) * rate;
+    const costDesign = (designMod > 1 ? 25000 : 5000) * rate;
+    const total = costPowertrain + costBattery + costLabor + costDesign;
+
+    document.getElementById('out-kw').innerText = kw;
+    document.getElementById('out-kwh').innerText = kwh;
+    document.getElementById('out-hours').innerText = totalLabor;
+    document.getElementById('out-days').innerText = estDays;
+    document.getElementById('total-price').innerText = symbol + " " + Math.round(total).toLocaleString();
+
+    document.getElementById('breakdown').innerHTML = `
+        <tr><td>Powertrain System</td><td>${kw}kW Heavy Duty Drive</td><td>${symbol} ${Math.round(costPowertrain).toLocaleString()}</td></tr>
+        <tr><td>Battery Storage</td><td>${kwh}kWh LFP Pack</td><td>${symbol} ${Math.round(costBattery).toLocaleString()}</td></tr>
+        <tr><td>Integration Labor</td><td>${totalLabor} Applied Hours</td><td>${symbol} ${Math.round(costLabor).toLocaleString()}</td></tr>
+        <tr><td>Engineering (R&D)</td><td>Custom Design & Certification</td><td>${symbol} ${Math.round(costDesign).toLocaleString()}</td></tr>
+    `;
+}
+
+// Fixed Submission Logic directed to mkt@injincorp.com
+function handleSubmit(e) {
+    e.preventDefault();
+    
+    // Show success text
+    document.getElementById('thankYouNote').style.display = 'block';
+    
+    // Collect specific inputs
+    const name = document.getElementById('fName').value;
+    const company = document.getElementById('fCompany').value;
+    const email = document.getElementById('fEmail').value;
+    const phone = document.getElementById('fPhone').value;
+    
+    // Construct email body
+    const bodyContent = `Build Slot Reservation Request:%0D%0A%0D%0AContact: ${name}%0D%0ACompany: ${company}%0D%0AEmail: ${email}%0D%0APhone: ${phone}`;
+    
+    // Execute mailto after delay
+    setTimeout(() => {
+        window.location.href = "mailto:mkt@injincorp.com?subject=Build Slot Reservation&body=" + bodyContent;
+    }, 1200);
+}
+
+// Initial call
+update();
+</script>
+
+</body>
+</html>
