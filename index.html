@@ -175,7 +175,7 @@ function update() {
     // Engineering Calculations
     const kw = Math.round(hp * 0.745);
     const kwh = Math.round(kw * 3.5);
-    const baseLabor = (type === 'custom' ? 400 : 200) + (weight * 12);
+    const baseLabor = (type === 'custom' ? 200 : 100) + (weight * 12);
     const totalLabor = Math.round(baseLabor * designMod);
     const estDays = Math.round(totalLabor / (team * 8));
 
