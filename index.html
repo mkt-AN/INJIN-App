@@ -174,14 +174,14 @@ function update() {
 
     // Engineering Calculations
     const kw = Math.round(hp * 0.745);
-    const kwh = Math.round(kw * 3.5);
+    const kwh = Math.round(kw * 1.5);
     const baseLabor = (type === 'custom' ? 200 : 100) + (weight * 12);
     const totalLabor = Math.round(baseLabor * designMod);
     const estDays = Math.round(totalLabor / (team * 8));
 
     // Pricing Estimates
-    const costPowertrain = (kw * 250) * rate;
-    const costBattery = (kwh * 450) * rate;
+    const costPowertrain = (kw * 25) * rate;
+    const costBattery = (kwh * 45) * rate;
     const costLabor = (totalLabor * 40) * rate;
     const costDesign = (designMod > 1 ? 25000 : 5000) * rate;
     const total = costPowertrain + costBattery + costLabor + costDesign;
