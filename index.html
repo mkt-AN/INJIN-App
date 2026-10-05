@@ -4,6 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INJIN-Corpe pvt ltd | Global Retrofit Dashboard</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+        .pro-tier-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 1.25rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .cost-breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.75rem;
+        }
+
+        .cost-breakdown-table th, 
+        .cost-breakdown-table td {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .cost-breakdown-table tfoot td {
+            font-weight: bold;
+            background: #edf2f7;
+        }
+
+        .roi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .metric-box {
+            padding: 0.75rem;
+            background: #eef2ff;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-box .value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #312e81;
+            display: block;
+        }
+
+        .profile-inputs {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-inputs input {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .profiles-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .profiles-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary { background-color: #2563eb; color: #fff; }
+        .btn-secondary { background-color: #475569; color: #fff; }
+        .btn-danger { background-color: #dc2626; color: #fff; padding: 0.25rem 0.5rem; }
+    </style>
+</head>
+    
+</head>
     <style>
         :root { --injin-green: #00d2d3; --injin-blue: #2e86de; --dark: #0f1215; --card: #1c2227; }
         body { font-family: 'Inter', sans-serif; background: var(--dark); color: #fff; margin: 0; padding: 20px; display: flex; justify-content: center; }
@@ -127,6 +236,100 @@
     </div>
 </div>
 
+<div id="pro-tier-container" class="pro-tier-section">
+    <!-- Header & PDF Export Button -->
+    <div class="pro-header">
+        <h2>Pro Tier Features</h2>
+        <button id="export-pdf-btn" class="btn btn-primary" onclick="exportProPDF()">
+            📄 Download Itemized PDF Report
+        </button>
+    </div>
+
+    <!-- Printable Report Container -->
+    <div id="pdf-report-content">
+        <!-- Itemized Cost Breakdown -->
+        <div class="card">
+            <h3>Itemized Cost Breakdown</h3>
+            <table class="cost-breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Details</th>
+                        <th>Cost ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="breakdown-tbody">
+                    <tr>
+                        <td><strong>Parts & Components</strong></td>
+                        <td>Batteries, Motors, Power Electronics, Wiring</td>
+                        <td id="parts-cost">$0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Labor & Engineering</strong></td>
+                        <td>R&D, Assembly, Technician Hours</td>
+                        <td id="labor-cost">$0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Estimated Downtime Loss</strong></td>
+                        <td>Loss of productivity during conversion</td>
+                        <td id="downtime-cost">$0</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2"><strong>Total Estimated Investment</strong></td>
+                        <td id="total-investment">$0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- ROI & Payback Period Calculation -->
+        <div class="card">
+            <h3>ROI & Payback Period Calculator</h3>
+            <div class="roi-grid">
+                <div class="input-group">
+                    <label for="annual-savings">Estimated Annual Operating Savings ($):</label>
+                    <input type="number" id="annual-savings" value="25000" oninput="calculateROI()">
+                </div>
+                <div class="roi-metrics">
+                    <div class="metric-box">
+                        <span class="label">Payback Period:</span>
+                        <span id="payback-period" class="value">0 Years</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="label">5-Year ROI:</span>
+                        <span id="roi-percentage" class="value">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Machine Profiles -->
+    <div class="card">
+        <h3>Saved Machine Profiles (Unlimited)</h3>
+        <div class="profile-inputs">
+            <input type="text" id="profile-name" placeholder="Profile Name (e.g., Fleet Unit #42)">
+            <button class="btn btn-secondary" onclick="saveCurrentProfile()">💾 Save Current Profile</button>
+        </div>
+        <ul id="saved-profiles-list" class="profiles-list">
+            <!-- Saved profiles will render here dynamically -->
+        </ul>
+    </div>
+</div>
+<!-- ========================================================= -->
+
+
+<!-- Existing Build Reservation Section -->
+<div>
+    <div>
+        <h2>Build Reservation</h2>
+    </div>
+</div>
+
+    
+    
 <div id="bookingModal">
     <div class="modal-box">
         <h2 style="margin-top:0; color:var(--injin-blue)">Build Reservation</h2>
@@ -193,6 +396,10 @@ function update() {
     document.getElementById('total-price').innerText = symbol + " " + Math.round(total).toLocaleString();
 
     document.getElementById('breakdown').innerHTML = `
+
+    // CONNECT PRO TIER CALCULATIONS (Parts, Labor, Downtime Loss)
+    updateProTierCalculations(costPowertrain + costBattery, costLabor + costDesign, (estDays * 800 * rate));
+    
         <tr><td>Powertrain System</td><td>${kw}kW Heavy Duty Drive</td><td>${symbol} ${Math.round(costPowertrain).toLocaleString()}</td></tr>
         <tr><td>Battery Storage</td><td>${kwh}kWh LFP Pack</td><td>${symbol} ${Math.round(costBattery).toLocaleString()}</td></tr>
         <tr><td>Integration Labor</td><td>${totalLabor} Applied Hours</td><td>${symbol} ${Math.round(costLabor).toLocaleString()}</td></tr>
@@ -201,7 +408,138 @@ function update() {
 }
 
 // Fixed Submission Logic directed to mkt@injincorp.com
-function handleSubmit(e) {
+function handleSubmit(e) 
+
+// =========================================================
+// PRO TIER JAVASCRIPT FUNCTIONS (PASTE HERE - LINES 285-286)
+// =========================================================
+
+// 1. Calculate & Render Itemized Cost Breakdown and ROI
+function updateProTierCalculations(partsCost, laborCost, downtimeCost) {
+    const total = partsCost + laborCost + downtimeCost;
+    const curr = document.getElementById('currency');
+    const symbol = curr ? curr.options[curr.selectedIndex].getAttribute('data-symbol') : '$';
+
+    document.getElementById('parts-cost').innerText = `${symbol} ${Math.round(partsCost).toLocaleString()}`;
+    document.getElementById('labor-cost').innerText = `${symbol} ${Math.round(laborCost).toLocaleString()}`;
+    document.getElementById('downtime-cost').innerText = `${symbol} ${Math.round(downtimeCost).toLocaleString()}`;
+    document.getElementById('total-investment').innerText = `${symbol} ${Math.round(total).toLocaleString()}`;
+
+    window.currentTotalInvestment = total;
+    calculateROI();
+}
+
+// 2. ROI & Payback Period Logic
+function calculateROI() {
+    const totalInvestment = window.currentTotalInvestment || 0;
+    const annualSavings = parseFloat(document.getElementById('annual-savings').value) || 0;
+
+    if (totalInvestment <= 0 || annualSavings <= 0) {
+        document.getElementById('payback-period').innerText = 'N/A';
+        document.getElementById('roi-percentage').innerText = '0%';
+        return;
+    }
+
+    const paybackYears = (totalInvestment / annualSavings).toFixed(1);
+    const fiveYearNetSavings = (annualSavings * 5) - totalInvestment;
+    const fiveYearROI = ((fiveYearNetSavings / totalInvestment) * 100).toFixed(1);
+
+    document.getElementById('payback-period').innerText = `${paybackYears} Years`;
+    document.getElementById('roi-percentage').innerText = `${fiveYearROI}%`;
+}
+
+// 3. Saved Machine Profiles (Unlimited Local Storage)
+function saveCurrentProfile() {
+    const profileNameInput = document.getElementById('profile-name');
+    const profileName = profileNameInput.value.trim();
+
+    if (!profileName) {
+        alert('Please enter a profile name before saving.');
+        return;
+    }
+
+    const currentProfile = {
+        id: Date.now(),
+        name: profileName,
+        machineType: document.getElementById('type').value,
+        weight: document.getElementById('weight').value,
+        hp: document.getElementById('hp').value,
+        investment: window.currentTotalInvestment || 0,
+        savedAt: new Date().toLocaleDateString()
+    };
+
+    let profiles = JSON.parse(localStorage.getItem('injin_pro_profiles') || '[]');
+    profiles.push(currentProfile);
+    localStorage.setItem('injin_pro_profiles', JSON.stringify(profiles));
+
+    profileNameInput.value = '';
+    renderSavedProfiles();
+}
+
+function loadProfile(id) {
+    const profiles = JSON.parse(localStorage.getItem('injin_pro_profiles') || '[]');
+    const profile = profiles.find(p => p.id === id);
+    if (profile) {
+        document.getElementById('type').value = profile.machineType;
+        document.getElementById('weight').value = profile.weight;
+        document.getElementById('hp').value = profile.hp;
+        update();
+        alert(`Loaded Profile: ${profile.name}`);
+    }
+}
+
+function deleteProfile(id) {
+    let profiles = JSON.parse(localStorage.getItem('injin_pro_profiles') || '[]');
+    profiles = profiles.filter(p => p.id !== id);
+    localStorage.setItem('injin_pro_profiles', JSON.stringify(profiles));
+    renderSavedProfiles();
+}
+
+function renderSavedProfiles() {
+    const list = document.getElementById('saved-profiles-list');
+    const profiles = JSON.parse(localStorage.getItem('injin_pro_profiles') || '[]');
+
+    if (profiles.length === 0) {
+        list.innerHTML = '<li><em style="color:#888">No saved profiles found.</em></li>';
+        return;
+    }
+
+    const curr = document.getElementById('currency');
+    const symbol = curr ? curr.options[curr.selectedIndex].getAttribute('data-symbol') : '$';
+
+    list.innerHTML = profiles.map(p => `
+        <li>
+            <span style="color:#000"><strong>${p.name}</strong> (${p.machineType.toUpperCase()}) - ${symbol}${Math.round(p.investment).toLocaleString()}</span>
+            <div>
+                <button class="btn btn-secondary" onclick="loadProfile(${p.id})">Load</button>
+                <button class="btn btn-danger" onclick="deleteProfile(${p.id})">Delete</button>
+            </div>
+        </li>
+    `).join('');
+}
+
+// 4. Download PDF Export using html2pdf.js
+function exportProPDF() {
+    const element = document.getElementById('pdf-report-content');
+    const opt = {
+        margin:       0.5,
+        filename:     'INJIN_Pro_Estimate_Report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+}
+
+// Initialize Pro Profiles on Load
+renderSavedProfiles();
+
+
+
+
+
+{
     e.preventDefault();
     
     // Show success text
