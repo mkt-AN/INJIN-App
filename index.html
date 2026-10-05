@@ -7,120 +7,53 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-<style>
-        .pro-tier-section {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .pro-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .card {
-            background: #ffffff;
-            padding: 1.25rem;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1.5rem;
-        }
-
-        .cost-breakdown-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 0.75rem;
-        }
-
-        .cost-breakdown-table th, 
-        .cost-breakdown-table td {
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            text-align: left;
-        }
-
-        .cost-breakdown-table tfoot td {
-            font-weight: bold;
-            background: #edf2f7;
-        }
-
-        .roi-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        .metric-box {
-            padding: 0.75rem;
-            background: #eef2ff;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-box .value {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #312e81;
-            display: block;
-        }
-
-        .profile-inputs {
-            display: flex;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .profile-inputs input {
-            flex: 1;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-        }
-
-        .profiles-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .profiles-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0.75rem;
-            background: #f1f5f9;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-primary { background-color: #2563eb; color: #fff; }
-        .btn-secondary { background-color: #475569; color: #fff; }
-        .btn-danger { background-color: #dc2626; color: #fff; padding: 0.25rem 0.5rem; }
-    </style>
-</head>
-    
-</head>
     <style>
-        :root { --injin-green: #00d2d3; --injin-blue: #2e86de; --dark: #0f1215; --card: #1c2227; }
-        body { font-family: 'Inter', sans-serif; background: var(--dark); color: #fff; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .wrapper { width: 100%; max-width: 1350px; display: grid; grid-template-columns: 400px 1fr; gap: 30px; }
+        :root { 
+            --injin-green: #00d2d3; 
+            --injin-blue: #2e86de; 
+            --dark: #0f1215; 
+            --card: #1c2227; 
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--dark); 
+            color: #fff; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+        }
+
+        .wrapper { 
+            width: 100%; 
+            max-width: 1350px; 
+            display: grid; 
+            grid-template-columns: 400px 1fr; 
+            gap: 30px; 
+        }
         
         /* Sidebar Configurator */
-        .sidebar { background: var(--card); padding: 35px; border-radius: 25px; border: 1px solid #333; height: fit-content; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .logo { font-size: 1.6rem; font-weight: 900; color: var(--injin-green); margin-bottom: 30px; border-left: 5px solid var(--injin-green); padding-left: 15px; text-transform: uppercase; }
+        .sidebar { 
+            background: var(--card); 
+            padding: 35px; 
+            border-radius: 25px; 
+            border: 1px solid #333; 
+            height: fit-content; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+        }
+
+        .logo { 
+            font-size: 1.6rem; 
+            font-weight: 900; 
+            color: var(--injin-green); 
+            margin-bottom: 30px; 
+            border-left: 5px solid var(--injin-green); 
+            padding-left: 15px; 
+            text-transform: uppercase; 
+        }
+
         .field { margin-bottom: 20px; }
         label { display: block; font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 8px; font-weight: bold; }
         select, input { width: 100%; padding: 14px; background: #000; border: 1px solid #444; border-radius: 12px; color: #fff; font-size: 1rem; box-sizing: border-box; }
@@ -148,6 +81,123 @@
         .modal-box input { border: 1px solid #ddd; background: #f4f4f4; color: #222; margin-bottom: 15px; }
         
         #thankYouNote { display: none; text-align: center; color: var(--injin-green); font-weight: bold; margin-top: 20px; }
+
+        /* Pro Tier Styles */
+        .pro-tier-section {
+            width: 100%;
+            max-width: 1350px;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            color: #1a202c;
+            box-sizing: border-box;
+        }
+
+        .pro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .pro-header h2 { margin: 0; }
+
+        .card {
+            background: #ffffff;
+            padding: 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .card h3 { margin-top: 0; color: #0f1215; }
+
+        .cost-breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.75rem;
+        }
+
+        .cost-breakdown-table th, 
+        .cost-breakdown-table td {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+            color: #2d3748;
+        }
+
+        .cost-breakdown-table tfoot td {
+            font-weight: bold;
+            background: #edf2f7;
+        }
+
+        .roi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .metric-box {
+            padding: 0.75rem;
+            background: #eef2ff;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-box .label { color: #374151; font-size: 0.9rem; }
+
+        .metric-box .value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #312e81;
+            display: block;
+        }
+
+        .profile-inputs {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-inputs input {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background: #fff;
+            color: #000;
+        }
+
+        .profiles-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .profiles-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary { background-color: #2563eb; color: #fff; }
+        .btn-secondary { background-color: #475569; color: #fff; }
+        .btn-danger { background-color: #dc2626; color: #fff; padding: 0.25rem 0.5rem; }
     </style>
 </head>
 <body>
@@ -157,7 +207,7 @@
         <div class="logo">INJIN-Corpe pvt ltd</div>
         
         <div class="field">
-            <label>Machine Selection</label>
+            <label for="type">Machine Selection</label>
             <select id="type" onchange="update()">
                 <option value="truck">Electric Haul Truck (SCANIA)</option>
                 <option value="excavator">Hydraulic Excavator (VOLVO)</option>
@@ -167,17 +217,17 @@
         </div>
 
         <div class="field">
-            <label>Current Weight (Tonnes)</label>
+            <label for="weight">Current Weight (Tonnes)</label>
             <input type="number" id="weight" value="20" oninput="update()">
         </div>
 
         <div class="field">
-            <label>Diesel Engine (HP)</label>
+            <label for="hp">Diesel Engine (HP)</label>
             <input type="number" id="hp" value="300" oninput="update()">
         </div>
 
         <div class="field">
-            <label>Design Availability</label>
+            <label for="design">Design Availability</label>
             <select id="design" onchange="update()">
                 <option value="1">CAD/3D Data Available</option>
                 <option value="1.9">No Designs (In-House Engineering)</option>
@@ -185,7 +235,7 @@
         </div>
 
         <div class="field">
-            <label>Team Strength On-Ground</label>
+            <label for="team">Team Strength On-Ground</label>
             <select id="team" onchange="update()">
                 <option value="2">2 Engineers</option>
                 <option value="5" selected>5 Engineers (Standard)</option>
@@ -194,7 +244,7 @@
         </div>
 
         <div class="field">
-            <label>Project Destination</label>
+            <label for="currency">Project Destination</label>
             <select id="currency" onchange="update()">
                 <option value="CHF" data-symbol="CHF" data-rate="0.91">Switzerland (CHF)</option>
                 <option value="NOK" data-symbol="kr" data-rate="10.8">Norway (NOK)</option>
@@ -255,7 +305,7 @@
                     <tr>
                         <th>Category</th>
                         <th>Details</th>
-                        <th>Cost ($)</th>
+                        <th>Cost</th>
                     </tr>
                 </thead>
                 <tbody id="breakdown-tbody">
@@ -289,8 +339,8 @@
             <h3>ROI & Payback Period Calculator</h3>
             <div class="roi-grid">
                 <div class="input-group">
-                    <label for="annual-savings">Estimated Annual Operating Savings ($):</label>
-                    <input type="number" id="annual-savings" value="25000" oninput="calculateROI()">
+                    <label for="annual-savings" style="color: #374151;">Estimated Annual Operating Savings:</label>
+                    <input type="number" id="annual-savings" value="25000" oninput="calculateROI()" style="background:#fff; color:#000; border:1px solid #cbd5e1; padding:8px; border-radius:4px; width:100%; box-sizing:border-box;">
                 </div>
                 <div class="roi-metrics">
                     <div class="metric-box">
@@ -314,36 +364,26 @@
             <button class="btn btn-secondary" onclick="saveCurrentProfile()">💾 Save Current Profile</button>
         </div>
         <ul id="saved-profiles-list" class="profiles-list">
-            <!-- Saved profiles will render here dynamically -->
+            <!-- Saved profiles render dynamically -->
         </ul>
     </div>
 </div>
-<!-- ========================================================= -->
 
-
-<!-- Existing Build Reservation Section -->
-<div>
-    <div>
-        <h2>Build Reservation</h2>
-    </div>
-</div>
-
-    
-    
+<!-- Booking Modal -->
 <div id="bookingModal">
     <div class="modal-box">
         <h2 style="margin-top:0; color:var(--injin-blue)">Build Reservation</h2>
         <form onsubmit="handleSubmit(event)">
-            <label style="color:#222">Contact Person</label>
+            <label style="color:#222" for="fName">Contact Person</label>
             <input type="text" id="fName" placeholder="Full Name" required>
             
-            <label style="color:#222">Company Name</label>
+            <label style="color:#222" for="fCompany">Company Name</label>
             <input type="text" id="fCompany" placeholder="Organization" required>
 
-            <label style="color:#222">Official Email ID</label>
+            <label style="color:#222" for="fEmail">Official Email ID</label>
             <input type="email" id="fEmail" placeholder="name@company.com" required>
             
-            <label style="color:#222">WhatsApp / Phone</label>
+            <label style="color:#222" for="fPhone">WhatsApp / Phone</label>
             <input type="tel" id="fPhone" placeholder="+41 00 000 00 00" required>
             
             <button type="submit" class="btn-action" style="background:var(--injin-blue); color:#fff">CONFIRM BOOKING</button>
@@ -396,25 +436,17 @@ function update() {
     document.getElementById('total-price').innerText = symbol + " " + Math.round(total).toLocaleString();
 
     document.getElementById('breakdown').innerHTML = `
-
-    // CONNECT PRO TIER CALCULATIONS (Parts, Labor, Downtime Loss)
-    updateProTierCalculations(costPowertrain + costBattery, costLabor + costDesign, (estDays * 800 * rate));
-    
         <tr><td>Powertrain System</td><td>${kw}kW Heavy Duty Drive</td><td>${symbol} ${Math.round(costPowertrain).toLocaleString()}</td></tr>
         <tr><td>Battery Storage</td><td>${kwh}kWh LFP Pack</td><td>${symbol} ${Math.round(costBattery).toLocaleString()}</td></tr>
         <tr><td>Integration Labor</td><td>${totalLabor} Applied Hours</td><td>${symbol} ${Math.round(costLabor).toLocaleString()}</td></tr>
         <tr><td>Engineering (R&D)</td><td>Custom Design & Certification</td><td>${symbol} ${Math.round(costDesign).toLocaleString()}</td></tr>
     `;
+
+    // Connect Pro Tier calculations
+    updateProTierCalculations(costPowertrain + costBattery, costLabor + costDesign, (estDays * 800 * rate));
 }
 
-// Fixed Submission Logic directed to mkt@injincorp.com
-function handleSubmit(e) 
-
-// =========================================================
-// PRO TIER JAVASCRIPT FUNCTIONS (PASTE HERE - LINES 285-286)
-// =========================================================
-
-// 1. Calculate & Render Itemized Cost Breakdown and ROI
+// Pro Tier Calculations
 function updateProTierCalculations(partsCost, laborCost, downtimeCost) {
     const total = partsCost + laborCost + downtimeCost;
     const curr = document.getElementById('currency');
@@ -429,7 +461,7 @@ function updateProTierCalculations(partsCost, laborCost, downtimeCost) {
     calculateROI();
 }
 
-// 2. ROI & Payback Period Logic
+// ROI & Payback Period Logic
 function calculateROI() {
     const totalInvestment = window.currentTotalInvestment || 0;
     const annualSavings = parseFloat(document.getElementById('annual-savings').value) || 0;
@@ -448,7 +480,7 @@ function calculateROI() {
     document.getElementById('roi-percentage').innerText = `${fiveYearROI}%`;
 }
 
-// 3. Saved Machine Profiles (Unlimited Local Storage)
+// Saved Machine Profiles
 function saveCurrentProfile() {
     const profileNameInput = document.getElementById('profile-name');
     const profileName = profileNameInput.value.trim();
@@ -518,7 +550,7 @@ function renderSavedProfiles() {
     `).join('');
 }
 
-// 4. Download PDF Export using html2pdf.js
+// Download PDF Export using html2pdf.js
 function exportProPDF() {
     const element = document.getElementById('pdf-report-content');
     const opt = {
@@ -532,35 +564,26 @@ function exportProPDF() {
     html2pdf().set(opt).from(element).save();
 }
 
-// Initialize Pro Profiles on Load
-renderSavedProfiles();
-
-
-
-
-
-{
+// Form Submission Logic
+function handleSubmit(e) {
     e.preventDefault();
     
-    // Show success text
     document.getElementById('thankYouNote').style.display = 'block';
     
-    // Collect specific inputs
     const name = document.getElementById('fName').value;
     const company = document.getElementById('fCompany').value;
     const email = document.getElementById('fEmail').value;
     const phone = document.getElementById('fPhone').value;
     
-    // Construct email body
     const bodyContent = `Build Slot Reservation Request:%0D%0A%0D%0AContact: ${name}%0D%0ACompany: ${company}%0D%0AEmail: ${email}%0D%0APhone: ${phone}`;
     
-    // Execute mailto after delay
     setTimeout(() => {
         window.location.href = "mailto:mkt@injincorp.com?subject=Build Slot Reservation&body=" + bodyContent;
     }, 1200);
 }
 
-// Initial call
+// Initialize on Load
+renderSavedProfiles();
 update();
 </script>
 
