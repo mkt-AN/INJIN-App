@@ -198,6 +198,56 @@
         .btn-primary { background-color: #2563eb; color: #fff; }
         .btn-secondary { background-color: #475569; color: #fff; }
         .btn-danger { background-color: #dc2626; color: #fff; padding: 0.25rem 0.5rem; }
+
+        .tco-input-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.tco-metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.metric-card {
+    padding: 15px;
+    border-radius: 10px;
+    background: #0f1215;
+    border: 1px solid #333;
+    text-align: center;
+}
+
+.metric-card.diesel { border-color: #ff6b6b; }
+.metric-card.electric { border-color: #2e86de; }
+.metric-card.savings { border-color: #00d2d3; background: rgba(0, 210, 211, 0.05); }
+.metric-card.payback { border-color: #ff9f43; background: rgba(255, 159, 67, 0.05); }
+
+.m-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.m-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+}
+/* ========================================================= */
+
+
+
+
+
+
+        
     </style>
 </head>
 <body>
@@ -356,6 +406,57 @@
         </div>
     </div>
 
+    <div class="card">
+    <h3>Fleet Total Cost of Ownership (TCO) & ROI Engine</h3>
+    <p style="color: #aaa; font-size: 13px;">Compare 5-Year Diesel Operating Expenditure vs. INJIN Electric Retrofit.</p>
+
+    <div class="tco-input-grid">
+        <div class="form-group">
+            <label>Annual Operating Hours</label>
+            <input type="number" id="tco-hours" value="2000" oninput="calculateFleetTCO()">
+        </div>
+        <div class="form-group">
+            <label>Diesel Consumption (Liters/Hour)</label>
+            <input type="number" id="tco-diesel-rate" value="12" step="0.5" oninput="calculateFleetTCO()">
+        </div>
+        <div class="form-group">
+            <label>Diesel Fuel Price ($/Liter or Local Curr.)</label>
+            <input type="number" id="tco-diesel-price" value="1.2" step="0.05" oninput="calculateFleetTCO()">
+        </div>
+        <div class="form-group">
+            <label>Electricity Cost ($/kWh)</label>
+            <input type="number" id="tco-elec-price" value="0.15" step="0.01" oninput="calculateFleetTCO()">
+        </div>
+        <div class="form-group">
+            <label>Machine Weight (Tonnes)</label>
+            <input type="number" id="tco-weight" value="20" oninput="calculateFleetTCO()">
+        </div>
+        <div class="form-group">
+            <label>Electric Consumption Rate (Auto-Calculated)</label>
+            <input type="text" id="tco-kwh-rate" value="26.7 kWh/hr" readonly style="background:#222; color:#00d2d3; font-weight:bold;">
+        </div>
+    </div>
+
+    <div class="tco-metrics-row">
+        <div class="metric-card diesel">
+            <span class="m-label">Annual Diesel Fuel + Maint.</span>
+            <span class="m-value" id="tco-annual-diesel">$0</span>
+        </div>
+        <div class="metric-card electric">
+            <span class="m-label">Annual Electric Power + Maint.</span>
+            <span class="m-value" id="tco-annual-elec">$0</span>
+        </div>
+        <div class="metric-card savings">
+            <span class="m-label">Net Annual Savings</span>
+            <span class="m-value" id="tco-annual-savings">$0</span>
+        </div>
+        <div class="metric-card payback">
+            <span class="m-label">Retrofit Payback Period</span>
+            <span class="m-value" id="tco-payback-years">0 Years</span>
+        </div>
+    </div>
+</div>
+
     <!-- Saved Machine Profiles -->
     <div class="card">
         <h3>Saved Machine Profiles (Unlimited)</h3>
@@ -441,6 +542,10 @@ function update() {
         <tr><td>Integration Labor</td><td>${totalLabor} Applied Hours</td><td>${symbol} ${Math.round(costLabor).toLocaleString()}</td></tr>
         <tr><td>Engineering (R&D)</td><td>Custom Design & Certification</td><td>${symbol} ${Math.round(costDesign).toLocaleString()}</td></tr>
     `;
+
+    calculateFleetTCO();
+
+    
 
     // Connect Pro Tier calculations
     updateProTierCalculations(costPowertrain + costBattery, costLabor + costDesign, (estDays * 800 * rate));
@@ -580,6 +685,53 @@ function handleSubmit(e) {
     setTimeout(() => {
         window.location.href = "mailto:mkt@injincorp.com?subject=Build Slot Reservation&body=" + bodyContent;
     }, 1200);
+
+    function calculateFleetTCO() {
+    const hours = parseFloat(document.getElementById('tco-hours').value) || 0;
+    const dieselLitersPerHour = parseFloat(document.getElementById('tco-diesel-rate').value) || 0;
+    const dieselPrice = parseFloat(document.getElementById('tco-diesel-price').value) || 0;
+    const elecPrice = parseFloat(document.getElementById('tco-elec-price').value) || 0;
+    
+    const mainWeight = parseFloat(document.getElementById('weight')?.value);
+    if (mainWeight && !document.getElementById('tco-weight').dataset.userModified) {
+        document.getElementById('tco-weight').value = mainWeight;
+    }
+    const weightTonnes = parseFloat(document.getElementById('tco-weight').value) || 0;
+
+    const kwhPerHour = (weightTonnes / 1.5) * 2;
+    document.getElementById('tco-kwh-rate').value = `${kwhPerHour.toFixed(1)} kWh/hr`;
+
+    const annualDieselFuelCost = hours * dieselLitersPerHour * dieselPrice;
+    const annualDieselMaintCost = hours * 4.5;
+    const totalAnnualDieselCost = annualDieselFuelCost + annualDieselMaintCost;
+
+    const annualElecEnergyCost = hours * kwhPerHour * elecPrice;
+    const annualElecMaintCost = hours * 1.5;
+    const totalAnnualElecCost = annualElecEnergyCost + annualElecMaintCost;
+
+    const netAnnualSavings = totalAnnualDieselCost - totalAnnualElecCost;
+    const initialRetrofitInvestment = window.currentTotalInvestment || 60000;
+    const paybackYears = netAnnualSavings > 0 ? (initialRetrofitInvestment / netAnnualSavings).toFixed(1) : "N/A";
+
+    const currSelect = document.getElementById('currency');
+    const symbol = currSelect ? currSelect.options[currSelect.selectedIndex].getAttribute('data-symbol') : '$';
+
+    document.getElementById('tco-annual-diesel').innerText = `${symbol} ${Math.round(totalAnnualDieselCost).toLocaleString()}`;
+    document.getElementById('tco-annual-elec').innerText = `${symbol} ${Math.round(totalAnnualElecCost).toLocaleString()}`;
+    document.getElementById('tco-annual-savings').innerText = `${symbol} ${Math.round(netAnnualSavings).toLocaleString()}`;
+    document.getElementById('tco-payback-years').innerText = `${paybackYears} Years`;
+
+    const annualSavingsInput = document.getElementById('annual-savings');
+    if (annualSavingsInput) {
+        annualSavingsInput.value = Math.round(netAnnualSavings);
+        if (typeof calculateROI === 'function') calculateROI();
+    }
+}
+
+document.getElementById('tco-weight')?.addEventListener('input', function() {
+    this.dataset.userModified = "true";
+});
+// =========================================================
 }
 
 // Initialize on Load
