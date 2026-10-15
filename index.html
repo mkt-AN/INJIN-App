@@ -394,6 +394,38 @@
 </div>
 
 <script>
+
+// =========================================================================
+// ADDED: Iteration History Store & Inactivity Tracker
+// =========================================================================
+let iterationHistory = [];
+let detectedUserLocation = "Detecting location...";
+let sessionStartTime = new Date();
+const INACTIVITY_LIMIT = 20 * 60 * 1000; // 20 Minutes
+let inactivityTimer = null;
+let hasSentLog = false;
+
+function resetInactivityTimer() {
+    if (hasSentLog) return;
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(sendSilentLogToServer, INACTIVITY_LIMIT);
+}
+
+['mousemove', 'keydown', 'click', 'scroll', 'touchstart', 'input'].forEach(evt => {
+    window.addEventListener(evt, resetInactivityTimer, true);
+});
+
+// Geolocation with IP Fallback
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+        (pos) => { detectedUserLocation = `Lat: ${pos.coords.latitude.toFixed(3)}, Lon: ${pos.coords.longitude.toFixed(3)}`; },
+        () => {
+            fetch('https://ipapi.co/json/').then(r => r.json()).then(d => { detectedUserLocation = `${d.city || ''}, ${d.country_name || 'Global'}`; }).catch(() => { detectedUserLocation = "Location Undetected"; });
+        }
+    );
+}
+
+
 // Machine Images mapping
 const machineImages = {
     truck: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Truck-Scania_V8.JPG/1280px-Truck-Scania_V8.JPG",
@@ -563,6 +595,29 @@ function exportProPDF() {
 
     html2pdf().set(opt).from(element).save();
 }
+
+function sendSilentLogToServer() {
+    if (iterationHistory.length === 0 || hasSentLog) return;
+    hasSentLog = true;
+
+    const payload = {
+        recipient: "mkt@injincorp.com",
+        sessionStart: sessionStartTime.toISOString(),
+        inactivityTriggerTime: new Date().toISOString(),
+        location: detectedUserLocation,
+        totalIterations: iterationHistory.length,
+        iterations: iterationHistory
+    };
+
+    fetch('/api/send-audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).catch(() => {
+        // Silently fails without interrupting the user
+    });
+}
+
 
 // Form Submission Logic
 function handleSubmit(e) {
