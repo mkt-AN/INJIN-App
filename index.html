@@ -208,7 +208,7 @@
         
         <div class="field">
             <label for="type">Machine Selection</label>
-            <select id="type" onchange="update()">
+            <select id="type" onchange="update('machine_type')">
                 <option value="truck">Electric Haul Truck (SCANIA)</option>
                 <option value="excavator">Hydraulic Excavator (VOLVO)</option>
                 <option value="telehandler">Heavy Telehandler (MANITOU)</option>
@@ -218,17 +218,17 @@
 
         <div class="field">
             <label for="weight">Current Weight (Tonnes)</label>
-            <input type="number" id="weight" value="20" oninput="update()">
+            <input type="number" id="weight" value="20" oninput="update('weight')">
         </div>
 
         <div class="field">
             <label for="hp">Diesel Engine (HP)</label>
-            <input type="number" id="hp" value="300" oninput="update()">
+            <input type="number" id="hp" value="300" oninput="update('horsepower')">
         </div>
 
         <div class="field">
             <label for="design">Design Availability</label>
-            <select id="design" onchange="update()">
+            <select id="design" onchange="update('design_availability')">
                 <option value="1">CAD/3D Data Available</option>
                 <option value="1.9">No Designs (In-House Engineering)</option>
             </select>
@@ -236,7 +236,7 @@
 
         <div class="field">
             <label for="team">Team Strength On-Ground</label>
-            <select id="team" onchange="update()">
+            <select id="team" onchange="update('team_strength')">
                 <option value="2">2 Engineers</option>
                 <option value="5" selected>5 Engineers (Standard)</option>
                 <option value="10">10 Engineers (Fast-Track)</option>
@@ -245,7 +245,7 @@
 
         <div class="field">
             <label for="currency">Project Destination</label>
-            <select id="currency" onchange="update()">
+            <select id="currency" onchange="update('currency')">
                 <option value="CHF" data-symbol="CHF" data-rate="0.91">Switzerland (CHF)</option>
                 <option value="NOK" data-symbol="kr" data-rate="10.8">Norway (NOK)</option>
                 <option value="GBP" data-symbol="£" data-rate="0.79">United Kingdom (GBP)</option>
@@ -287,7 +287,6 @@
 </div>
 
 <div id="pro-tier-container" class="pro-tier-section">
-    <!-- Header & PDF Export Button -->
     <div class="pro-header">
         <h2>Pro Tier Features</h2>
         <button id="export-pdf-btn" class="btn btn-primary" onclick="exportProPDF()">
@@ -295,9 +294,7 @@
         </button>
     </div>
 
-    <!-- Printable Report Container -->
     <div id="pdf-report-content">
-        <!-- Itemized Cost Breakdown -->
         <div class="card">
             <h3>Itemized Cost Breakdown</h3>
             <table class="cost-breakdown-table">
@@ -334,7 +331,6 @@
             </table>
         </div>
 
-        <!-- ROI & Payback Period Calculation -->
         <div class="card">
             <h3>ROI & Payback Period Calculator</h3>
             <div class="roi-grid">
@@ -356,7 +352,6 @@
         </div>
     </div>
 
-    <!-- Saved Machine Profiles -->
     <div class="card">
         <h3>Saved Machine Profiles (Unlimited)</h3>
         <div class="profile-inputs">
@@ -364,12 +359,10 @@
             <button class="btn btn-secondary" onclick="saveCurrentProfile()">💾 Save Current Profile</button>
         </div>
         <ul id="saved-profiles-list" class="profiles-list">
-            <!-- Saved profiles render dynamically -->
         </ul>
     </div>
 </div>
 
-<!-- Booking Modal -->
 <div id="bookingModal">
     <div class="modal-box">
         <h2 style="margin-top:0; color:var(--injin-blue)">Build Reservation</h2>
@@ -394,14 +387,11 @@
 </div>
 
 <script>
-
-// =========================================================================
-// ADDED: Iteration History Store & Inactivity Tracker
-// =========================================================================
+// Tracker & Silent Dispatch
 let iterationHistory = [];
 let detectedUserLocation = "Detecting location...";
 let sessionStartTime = new Date();
-const INACTIVITY_LIMIT = 10 * 1000; // 10 seconds
+const INACTIVITY_LIMIT = 10 * 1000; // 10 Seconds testing limit
 let inactivityTimer = null;
 let hasSentLog = false;
 
@@ -415,7 +405,6 @@ function resetInactivityTimer() {
     window.addEventListener(evt, resetInactivityTimer, true);
 });
 
-// Geolocation with IP Fallback
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
         (pos) => { detectedUserLocation = `Lat: ${pos.coords.latitude.toFixed(3)}, Lon: ${pos.coords.longitude.toFixed(3)}`; },
@@ -425,8 +414,6 @@ if (navigator.geolocation) {
     );
 }
 
-
-// Machine Images mapping
 const machineImages = {
     truck: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Truck-Scania_V8.JPG/1280px-Truck-Scania_V8.JPG",
     excavator: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Volvo_EC460B_LC.jpg/1280px-Volvo_EC460B_LC.jpg",
@@ -434,7 +421,7 @@ const machineImages = {
     custom: "https://images.pexels.com/photos/38271/mechanical-engineer-engineering-machine-machine-shop-38271.jpeg?auto=compress&cs=tinysrgb&w=1200"
 };
 
-function update() {
+function update(changedField = 'initial') {
     const type = document.getElementById('type').value;
     const weight = parseFloat(document.getElementById('weight').value) || 0;
     const hp = parseFloat(document.getElementById('hp').value) || 0;
@@ -444,17 +431,14 @@ function update() {
     const symbol = curr.options[curr.selectedIndex].getAttribute('data-symbol');
     const rate = parseFloat(curr.options[curr.selectedIndex].getAttribute('data-rate'));
 
-    // Update image
     document.getElementById('mImg').src = machineImages[type];
 
-    // Engineering Calculations
     const kw = Math.round(hp * 0.745);
     const kwh = Math.round(kw * 1.2);
     const baseLabor = (type === 'custom' ? 200 : 100) + (weight * 12);
     const totalLabor = Math.round(baseLabor * designMod);
     const estDays = Math.round(totalLabor / (team * 8));
 
-    // Pricing Estimates
     const costPowertrain = (kw * 250) * rate;
     const costBattery = (kwh * 45) * rate;
     const costLabor = (totalLabor * 40) * rate;
@@ -474,11 +458,24 @@ function update() {
         <tr><td>Engineering (R&D)</td><td>Custom Design & Certification</td><td>${symbol} ${Math.round(costDesign).toLocaleString()}</td></tr>
     `;
 
-    // Connect Pro Tier calculations
     updateProTierCalculations(costPowertrain + costBattery, costLabor + costDesign, (estDays * 800 * rate));
+
+    // RECORD ITERATION IN HISTORY STORE
+    iterationHistory.push({
+        step: iterationHistory.length + 1,
+        timestamp: new Date().toISOString(),
+        fieldChanged: changedField,
+        machineType: type,
+        weightTons: weight,
+        horsepower: hp,
+        requiredKw: kw,
+        batteryKwh: kwh,
+        totalQuote: `${symbol} ${Math.round(total).toLocaleString()}`
+    });
+
+    resetInactivityTimer();
 }
 
-// Pro Tier Calculations
 function updateProTierCalculations(partsCost, laborCost, downtimeCost) {
     const total = partsCost + laborCost + downtimeCost;
     const curr = document.getElementById('currency');
@@ -493,7 +490,6 @@ function updateProTierCalculations(partsCost, laborCost, downtimeCost) {
     calculateROI();
 }
 
-// ROI & Payback Period Logic
 function calculateROI() {
     const totalInvestment = window.currentTotalInvestment || 0;
     const annualSavings = parseFloat(document.getElementById('annual-savings').value) || 0;
@@ -512,7 +508,6 @@ function calculateROI() {
     document.getElementById('roi-percentage').innerText = `${fiveYearROI}%`;
 }
 
-// Saved Machine Profiles
 function saveCurrentProfile() {
     const profileNameInput = document.getElementById('profile-name');
     const profileName = profileNameInput.value.trim();
@@ -547,7 +542,7 @@ function loadProfile(id) {
         document.getElementById('type').value = profile.machineType;
         document.getElementById('weight').value = profile.weight;
         document.getElementById('hp').value = profile.hp;
-        update();
+        update('profile_load');
         alert(`Loaded Profile: ${profile.name}`);
     }
 }
@@ -582,7 +577,6 @@ function renderSavedProfiles() {
     `).join('');
 }
 
-// Download PDF Export using html2pdf.js
 function exportProPDF() {
     const element = document.getElementById('pdf-report-content');
     const opt = {
@@ -613,13 +607,9 @@ function sendSilentLogToServer() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-    }).catch(() => {
-        // Silently fails without interrupting the user
-    });
+    }).catch(err => console.error(err));
 }
 
-
-// Form Submission Logic
 function handleSubmit(e) {
     e.preventDefault();
     
@@ -637,9 +627,8 @@ function handleSubmit(e) {
     }, 1200);
 }
 
-// Initialize on Load
 renderSavedProfiles();
-update();
+update('initial');
 </script>
 
 </body>
